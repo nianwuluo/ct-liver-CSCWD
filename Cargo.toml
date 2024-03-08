@@ -1,0 +1,7 @@
+[workspace]
+resolver = "2"
+members = [
+    "ct-berry",
+    "ablations/surface8",
+    "ablations/utils",
+]

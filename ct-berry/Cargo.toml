@@ -1,0 +1,60 @@
+[package]
+name = "ct-berry"
+version = "0.11.2"
+edition = "2021"
+description = "基于 LiTS 格式的 3D 肝脏 CT 扫描 nifti 文件处理工具"
+
+# https://doc.rust-lang.org/cargo/reference/features.html#optional-dependencies
+rust-version = "1.75.0"
+
+[build-dependencies]
+cfg-if = "1.0.0"
+
+[target.'cfg(all(target_os = "macos", target_arch = "aarch64"))'.dependencies]
+ndarray-linalg = { version = "0.16.0", default-features = false }
+blas-src = { version = "0.9.0", features = ["accelerate"] }
+
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+ndarray-linalg = { version = "0.16.0", features = ["intel-mkl-system"] }
+
+#[target.'cfg(all(target_arch = "aarch64", target_os = "linux"))'.dependencies]
+#ndarray-linalg = { version = "0.16.0" }
+
+[dependencies]
+cfg-if = "1.0.0"
+either = "1"
+itertools = "0.12"
+ndarray = { version = "0.15", features = ["rayon"] }
+ndarray-npy = "0.8"
+nifti = "0.16"
+num = "0.4"
+ordered-float = "4"
+rayon = { version = "1", optional = true }
+dirs = "5"
+image = "0.24"
+binary-heap-plus = "0.5"
+once_cell = "1"
+flate2 = { version = "1.0.28", features = ["zlib"] }
+
+
+# 只在特定 feature 打开时才依赖这些库.
+opencv = { version = "0.88.7", optional = true }
+serde = { version = "1", optional = true, features = ["derive"] }
+bincode = "1.3.3"
+
+[features]
+default = ["full"]
+
+plot = ["dep:opencv"]  # 图像可视化工具
+rayon = ["dep:rayon"]  # 多线程并行支持
+serde = ["ndarray/serde", "dep:serde"]  # 序列化/反序列化支持
+
+full = ["rayon", "serde"]  # 用于生产环境的功能
+full-dev = ["plot", "rayon", "serde"]  # 用于开发环境的全部功能
+
+[dev-dependencies]
+threadpool = "1"
+num_cpus = "1"
+rayon = "1"
+simple_logger = "4"
+dirs = "5"
